@@ -2,7 +2,9 @@
 
 A Retrieval-Augmented Generation (RAG) system that answers NLP research questions by retrieving relevant papers from a corpus of 100+ papers and generating answers with citations.
 
-**Live Demo**: [Kaggle Gradio](https://28ca182464f8b699e6.gradio.live) (GPU required)
+**Live Demo**: [Gradio Demo](https://39de5db96927edfe82.gradio.live)
+
+![Demo Screenshot](demo.png)
 
 ## Architecture
 
@@ -14,8 +16,7 @@ User Question → BGE Embedding → ChromaDB Vector Search (top-10)
 ## Knowledge Base
 
 - 100+ papers from Semantic Scholar API
-- Covers: machine translation, LLM alignment (RLHF), text summarization, multilingual NLP, cross-lingual transfer
-- Time range: 2016-2026
+- Covers: machine translation, LLM alignment (RLHF), text summarization, multilingual NLP, knowledge distillation
 
 ## Experiments
 
@@ -23,9 +24,9 @@ User Question → BGE Embedding → ChromaDB Vector Search (top-10)
 
 | Chunk Size | Chunks | Top-1 Score | Top-5 Avg |
 |---|---|---|---|
-| 256 | 159 | **0.5860** | **0.5775** |
-| 512 | 100 | 0.5604 | 0.5550 |
-| 1024 | 100 | 0.5604 | 0.5550 |
+| 256 | 188 | **0.5884** | **0.5735** |
+| 512 | 115 | 0.5633 | 0.5571 |
+| 1024 | 113 | 0.5633 | 0.5548 |
 
 Chunk size 256 gives the highest retrieval precision. 512 is used in production as the best trade-off between precision and index size.
 
@@ -33,10 +34,9 @@ Chunk size 256 gives the highest retrieval precision. 512 is used in production 
 
 | Query | Top-1 w/o Reranker | Top-1 w/ Reranker |
 |---|---|---|
-| RLHF alignment | InfAlign (0.53) | Accelerated Preference Optimization (0.97) |
-| Low-resource MT | Low-Resource NLP (0.61) | Cross-Lingual Transfer (reranked) |
+| Low-resource MT | Confidence-Based KD (0.60) | Confidence-Based KD (0.74) |
 
-The reranker (BGE-reranker-base) effectively re-orders initial retrieval results, boosting the most relevant papers to the top.
+The reranker (BGE-reranker-base) boosts the relevance score of the top-ranked paper, confirming its ranking.
 
 ## Key Findings
 
@@ -64,6 +64,7 @@ python app.py
 
 ## Files
 
+- `train_clean.py` — Clean 8-cell Kaggle notebook
 - `train.ipynb` — Kaggle notebook (data crawling, indexing, RAG pipeline)
 - `app.py` — Gradio demo
 - `requirements.txt` — Python dependencies
